@@ -1,3 +1,11 @@
+FROM maven:3.8.4-openjdk-17 as builder
+
+ADD . .
+
+RUN mvn install -Dmaven.test.skip=true
+
+RUN ls -al
+
 FROM openjdk:17.0.1-slim
 
 RUN   groupadd -g 1000 appuser \
@@ -7,7 +15,7 @@ RUN   groupadd -g 1000 appuser \
 
 WORKDIR /home/appuser
 
-COPY --chown=1000:1000 /target/*.jar /home/appuser/app.jar
+COPY --from=builder target/*.jar /home/appuser/app.jar
 
 USER appuser
 
